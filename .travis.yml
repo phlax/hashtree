@@ -1,0 +1,22 @@
+# https://travis-ci.org/#!/phlax/hashtree
+
+dist: bionic
+language: python
+env:
+  global:
+    - PYTHONUNBUFFERED=1
+
+before_install:
+  - sudo apt install hashdeep
+  - make test-directory-tree
+  - make deb
+  - make pysh
+
+script:
+  - ls dist
+  - export COMPOSE_FILE=./example/docker-compose.yml
+
+  - pysh ./tests/hashing
+
+  - shellcheck -x usr/lib/hashtree/*
+  - shellcheck -x usr/bin/*
