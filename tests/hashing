@@ -1,0 +1,72 @@
+#!/bin/bash -v
+
+if [ ! -z "$TRAP_ERRORS" ]; then
+    trap "$TRAP_ERRORS" ERR
+fi
+
+docker-compose up -d
+
+export HASHTREE="docker-compose exec -T hashtree"
+
+$HASHTREE bash -c "\
+	       mkdir -p foo/bar \
+	       && echo 'CONTENTS 1' > foo/bar/baz1 \
+	       && echo 'NOT CONTENTS 1' > foo/bar/baz1~ \
+	       && echo 'CONTENTS 2' > foo/bar/baz2 \
+	       && echo 'CONTENTS 3' > foo/bar/baz3"
+
+## path
+
+tree=$($HASHTREE hashtree ls-tree foo)
+echo "$tree"
+bash -c "echo \"$tree\" | grep baz1"
+bash -c "echo \"$tree\" | grep baz2"
+bash -c "echo \"$tree\" | grep baz3"
+bash -c "echo \"$tree\" | grep \"~\""
+
+
+## -i
+
+tree=$($HASHTREE hashtree -i "*~" -i "baz3" ls-tree foo)
+echo "$tree"
+bash -c "echo \"$tree\" | grep baz1"
+bash -c "echo \"$tree\" | grep baz2"
+bash -c "echo \"$tree\" | grep baz3 && exit 1 || exit 0"
+bash -c "echo \"$tree\" | grep ~ && exit 1 || exit 0"
+
+
+## .hashignore
+
+$HASHTREE bash -c "\
+	       echo \"*~\" > foo/.hashignore \
+	       && echo \"baz2\" >> foo/.hashignore"
+
+
+tree=$($HASHTREE hashtree ls-tree foo)
+# echo "$tree"
+bash -c "echo \"$tree\" | grep baz1"
+bash -c "echo \"$tree\" | grep baz3"
+bash -c "echo \"$tree\" | grep baz2 && exit 1 || exit 0"
+bash -c "echo \"$tree\" | grep ~ && exit 1 || exit 0"
+
+$HASHTREE bash -c "cat foo/.hashignore"
+$HASHTREE bash -c "rm foo/.hashignore"
+
+
+## custom ignore file
+$HASHTREE bash -c "\
+	       echo \"*~\" > customignore \
+	       && echo \"baz1\" >> customignore"
+tree=$($HASHTREE hashtree -i "baz3" -c customignore ls-tree foo)
+bash -c "echo \"$tree\" | grep baz2"
+bash -c "echo \"$tree\" | grep baz1 && exit 1 || exit 0"
+bash -c "echo \"$tree\" | grep baz3 && exit 1 || exit 0"
+bash -c "echo \"$tree\" | grep ~ && exit 1 || exit 0"
+
+
+## hashing
+expected=$(echo "$tree" | sha1sum | cut -d' ' -f1)
+$HASHTREE hashtree -i "baz3" -c customignore hash foo | grep $expected
+
+
+# docker-compose down

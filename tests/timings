@@ -1,0 +1,27 @@
+#!/bin/bash
+
+
+test_tar () {
+    tar cf - /tmp/dirtree | sha1sum
+}
+
+
+test_githash () {
+    find /tmp/dirtree -type f -print0 | sort -z | xargs -0 git hash-object | git hash-object --stdin
+}
+
+
+test_shasum () {
+    find /tmp/dirtree -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum
+}
+
+
+test_shasum256 () {
+    find /tmp/dirtree -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum
+}
+
+
+time test_tar
+time test_shasum
+time test_shasum256
+time test_githash

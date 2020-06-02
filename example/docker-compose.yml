@@ -1,0 +1,28 @@
+version: "2.4"
+
+services:
+  waiter:
+    image: busybox
+    depends_on:
+      hashtree:
+        condition: service_healthy
+  hashtree:
+    image: debian:buster-slim
+    privileged: true
+    command: tail -f /dev/null
+    entrypoint:
+      - /entrypoint.sh
+    environment:
+      - TERM=linux
+      - DEBIAN_FRONTEND=noninteractive
+    working_dir: /tmp
+    volumes:
+      - ${PWD}/example/entrypoint.sh:/entrypoint.sh
+      - ${PWD}/dist:/tmp/dist
+      - /tmp/dirtree:/tmp/dirtree
+
+      - ${PWD}/usr/bin/hashtree:/usr/bin/hashtree2:shared
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test: which hashtree || exit 1
