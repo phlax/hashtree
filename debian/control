@@ -1,0 +1,15 @@
+Source: hashtree
+Section: devel
+Priority: optional
+Maintainer: "Ryan Northey" <ryan@synca.io>
+Build-Depends: debhelper (>=11~)
+Standards-Version: 4.1.4
+Homepage: https://github.com/phlax/hashtree
+
+Package: hashtree
+Section: devel
+Priority: optional
+Architecture: all
+Depends: coreutils, findutils
+Description: Hash directories
+ Hash directories, ignoring specified files
