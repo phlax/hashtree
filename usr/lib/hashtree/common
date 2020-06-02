@@ -1,0 +1,66 @@
+#!/bin/bash -e
+
+HASHT_HASH_FUN=${HASHT_HASH_FUN:-sha1sum}
+HASHT_SORT_FUN=${HASHT_SORT_FUN:-"sort -z"}
+
+
+hasht_log () {
+    echo "${*}"
+}
+
+
+hasht_log_warn () {
+    echo "WARNING: ${*}" >&2
+}
+
+
+hasht_log_error () {
+    echo "ERROR: ${*}" >&2
+}
+
+
+hasht_path_arg () {
+    printf -- "-not -path '*/%s' " "$1"
+}
+
+
+hasht_walk () {
+    local config glob ignore line option options path
+    path="$1"
+    config="$2"
+    shift 2
+    ignore=("$@")
+    if [ -f "$config" ]; then
+	while IFS= read -r line; do
+	    option=$(hasht_path_arg "$line")
+	    options+=("$option")
+	done < "$config"
+    elif [ "$config" != "${path}/.hashignore" ]; then
+	hasht_log_warn "Ignore config not found: $config"
+    fi
+    for glob in "${ignore[@]}"; do
+	option=$(hasht_path_arg "$glob")
+	options+=("$option")
+    done
+    options+=(-type f -print0)
+    cmd="/usr/bin/find $path ${options[*]}"
+    # echo "$cmd"
+    eval "$cmd"
+}
+
+
+hasht_hash_file () {
+    $HASHT_HASH_FUN "$1"
+}
+
+
+hasht_ls_tree () {
+    export HASHT_HASH_FUN
+    export -f hasht_hash_file
+    hasht_walk "$@" | $HASHT_SORT_FUN | /usr/bin/xargs --replace -0 bash -c 'hasht_hash_file {}'
+}
+
+
+hasht_hash () {
+    hasht_ls_tree "$@" | $HASHT_HASH_FUN | cut -d' ' -f1
+}

@@ -1,0 +1,43 @@
+#!/bin/bash -e
+
+. /usr/lib/hashtree/functions
+
+
+usage () {
+    echo "Usage: cmd [-h] [-i] [-c] <cmd> <path>"
+}
+
+
+while getopts ":i:c:" opt; do
+    case ${opt} in
+	c )
+	    HASHT_CONFIG="$OPTARG"
+	    ;;
+
+	i )
+	    HASHT_IGNORE+=("$OPTARG")
+	    ;;
+	\? )
+	    usage
+	    ;;
+    esac
+done
+
+
+shift $((OPTIND -1))
+
+HASHT_PATH=${2:-.}
+HASHT_CONFIG=${HASHT_CONFIG:-"$HASHT_PATH/.hashignore"}
+
+
+case "$1" in
+    hash )
+	hasht_hash "$HASHT_PATH" "$HASHT_CONFIG" "${HASHT_IGNORE[@]}"
+	;;
+    ls-tree )
+	hasht_ls_tree "$HASHT_PATH" "$HASHT_CONFIG" "${HASHT_IGNORE[@]}"
+	;;
+    * )
+	usage
+	;;
+esac
