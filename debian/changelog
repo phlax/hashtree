@@ -1,4 +1,10 @@
-hashtree (0.0.1) UNRELEASED; urgency=medium
+hashtree (0.0.2) UNRELEASED; urgency=medium
+
+  * Fix ensure paths are relative to directory root
+
+ -- Ryan Northey <ryan@synca.io>  Wed, 03 Jun 2020 07:52:32 +0100
+
+hashtree (0.0.1) buster; urgency=medium
 
   * Initial release.
 
