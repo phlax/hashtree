@@ -11,7 +11,7 @@ usage () {
 while getopts ":i:c:" opt; do
     case ${opt} in
 	c )
-	    HASHT_CONFIG=$(readlink -f "$OPTARG")
+	    HASHT_CONFIG="$OPTARG"
 	    ;;
 
 	i )

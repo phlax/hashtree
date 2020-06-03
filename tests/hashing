@@ -55,9 +55,9 @@ $HASHTREE bash -c "rm foo/.hashignore"
 
 ## custom ignore file
 $HASHTREE bash -c "\
-	       echo \"*~\" > customignore \
-	       && echo \"baz1\" >> customignore"
-tree=$($HASHTREE hashtree -i "baz3" -c customignore ls-tree foo)
+	       echo \"*~\" > /tmp/customignore \
+	       && echo \"baz1\" >> /tmp/customignore"
+tree=$($HASHTREE hashtree -i "baz3" -c /tmp/customignore ls-tree foo)
 bash -c "echo \"$tree\" | grep baz2"
 bash -c "echo \"$tree\" | grep baz1 && exit 1 || exit 0"
 bash -c "echo \"$tree\" | grep baz3 && exit 1 || exit 0"
@@ -66,7 +66,7 @@ bash -c "echo \"$tree\" | grep ~ && exit 1 || exit 0"
 
 ## hashing
 expected=$(echo "$tree" | sha1sum | cut -d' ' -f1)
-$HASHTREE hashtree -i "baz3" -c customignore hash foo | grep $expected
+$HASHTREE hashtree -i "baz3" -c /tmp/customignore hash foo | grep $expected
 
 
 # docker-compose down
