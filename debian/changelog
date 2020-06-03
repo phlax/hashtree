@@ -1,4 +1,10 @@
-hashtree (0.0.2) UNRELEASED; urgency=medium
+hashtree (0.0.3) UNRELEASED; urgency=medium
+
+  * Fix make -c paths relative to directory root
+
+ -- Ryan Northey <ryan@synca.io>  Wed, 03 Jun 2020 08:57:35 +0100
+
+hashtree (0.0.2) buster; urgency=medium
 
   * Fix ensure paths are relative to directory root
 
