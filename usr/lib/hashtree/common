@@ -43,7 +43,7 @@ hasht_walk () {
 	options+=("$option")
     done
     options+=(-type f -print0)
-    cmd="/usr/bin/find $path ${options[*]}"
+    cmd="/usr/bin/find . ${options[*]}"
     # echo "$cmd"
     eval "$cmd"
 }
@@ -55,9 +55,14 @@ hasht_hash_file () {
 
 
 hasht_ls_tree () {
+    local cwd
+    cwd=$(pwd)
+    path="$1"
+    cd "$path"
     export HASHT_HASH_FUN
     export -f hasht_hash_file
     hasht_walk "$@" | $HASHT_SORT_FUN | /usr/bin/xargs --replace -0 bash -c 'hasht_hash_file {}'
+    cd "$cwd"
 }
 
 
