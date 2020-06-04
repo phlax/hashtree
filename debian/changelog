@@ -1,4 +1,10 @@
-hashtree (0.0.3) UNRELEASED; urgency=medium
+hashtree (0.0.4) UNRELEASED; urgency=medium
+
+  * Dont warn on missing ignore file
+
+ -- Ryan Northey <ryan@synca.io>  Thu, 04 Jun 2020 09:46:14 +0100
+
+hashtree (0.0.3) buster; urgency=medium
 
   * Fix make -c paths relative to directory root
 
