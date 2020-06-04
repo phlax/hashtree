@@ -35,8 +35,8 @@ hasht_walk () {
 	    option=$(hasht_path_arg "$line")
 	    options+=("$option")
 	done < "$config"
-    elif [ "$config" != "${path}/.hashignore" ]; then
-	hasht_log_warn "Ignore config not found: $config"
+    # elif [ "$config" != "${path}/.hashignore" ]; then
+	# hasht_log_warn "Ignore config not found: $config"
     fi
     for glob in "${ignore[@]}"; do
 	option=$(hasht_path_arg "$glob")
